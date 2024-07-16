@@ -30,4 +30,17 @@ class User {
     public function getEmail() {
         return $this->email;
     }
+
+    public function save($db) {
+        $query = "INSERT INTO users (username, email, password) VALUES (:username, :email, :password)";
+        $stmt = $db->prepare($query);
+        
+        $hashed_password = password_hash($this->password, PASSWORD_DEFAULT);
+        
+        $stmt->bindParam(":username", $this->username);
+        $stmt->bindParam(":email", $this->email);
+        $stmt->bindParam(":password", $hashed_password);
+
+        return $stmt->execute();
+    }
 }
