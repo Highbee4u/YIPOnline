@@ -1,14 +1,16 @@
 <?php
-// public/index.php
-
 require_once __DIR__ . '/../vendor/autoload.php';
 require_once __DIR__ . '/../src/User.php';
+require_once __DIR__ . '/../src/Database.php';
+
 
 $smarty = new Smarty();
 $smarty->setTemplateDir(__DIR__ . '/../templates');
 $smarty->setCompileDir(__DIR__ . '/../templates_c');
-$smarty->setCacheDir(__DIR__ . '/../cache');
-$smarty->setConfigDir(__DIR__ . '/../configs');
+
+$database = new Database();
+$db = $database->getConnection();
+
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $username = $_POST['username'] ?? '';
@@ -31,10 +33,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 
     if (empty($errors)) {
-        // In a real application, you would save the user to a database here
-        $smarty->assign('success', 'Registration successful!');
-        $smarty->assign('user', $user);
-    } else {
+        try {
+            if ($user->save($db)) {
+                $smarty->assign('success', 'Registration successful!');
+                $smarty->assign('user', $user);
+            } else {
+                $errors[] = "Failed to save user. Please try again.";
+            }
+        } catch (PDOException $e) {
+            $errors[] = "Database error: " . $e->getMessage();
+        }
+    }
+
+    if (!empty($errors)) {
         $smarty->assign('errors', $errors);
     }
 }
