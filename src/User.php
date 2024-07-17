@@ -4,11 +4,13 @@ class User {
     private $username;
     private $email;
     private $password;
+    private $db;
 
-    public function __construct($username, $email, $password) {
+    public function __construct($username, $email, $password, $db) {
         $this->username = $username;
         $this->email = $email;
         $this->password = $password;
+        $this->db = $db;
     }
 
     public function validateUsername() {
@@ -31,9 +33,9 @@ class User {
         return $this->email;
     }
 
-    public function save($db) {
+    public function save() {
         $query = "INSERT INTO users (username, email, password) VALUES (:username, :email, :password)";
-        $stmt = $db->prepare($query);
+        $stmt = $this->db->prepare($query);
         
         $hashed_password = password_hash($this->password, PASSWORD_DEFAULT);
         
