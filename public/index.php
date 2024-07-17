@@ -24,10 +24,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     if (!$user->validateUsername()) {
         $errors[] = "Username must be alphanumeric and between 3-20 characters.";
+    } elseif ($user->usernameExists()) {
+        $errors[] = "Username already exists. Please choose a different username.";
     }
 
     if (!$user->validateEmail()) {
         $errors[] = "Invalid email format.";
+    } elseif ($user->emailExists()) {
+        $errors[] = "Email already registered. Please use a different email address.";
     }
 
     if (!$user->validatePassword()) {

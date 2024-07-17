@@ -43,4 +43,20 @@ class User {
 
         return $stmt->execute();
     }
+
+    public function usernameExists() {
+        $query = "SELECT COUNT(*) FROM users WHERE username = :username";
+        $stmt = $this->db->prepare($query);
+        $stmt->bindParam(":username", $this->username);
+        $stmt->execute();
+        return $stmt->fetchColumn() > 0;
+    }
+
+    public function emailExists() {
+        $query = "SELECT COUNT(*) FROM users WHERE email = :email";
+        $stmt = $this->db->prepare($query);
+        $stmt->bindParam(":email", $this->email);
+        $stmt->execute();
+        return $stmt->fetchColumn() > 0;
+    }
 }
